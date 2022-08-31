@@ -205,7 +205,7 @@ public class WkfCommonServiceImpl implements WkfCommonService {
 
   private String getModelName(Model model) {
 
-    if (model instanceof MetaJsonRecord) {
+    if (model instanceof MetaJsonRecord && ((MetaJsonRecord) model).getSurveyResponse() == null) {
       return ((MetaJsonRecord) model).getJsonModel();
     }
 

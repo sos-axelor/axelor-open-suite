@@ -20,8 +20,10 @@ package com.axelor.apps.bpm.module;
 import com.axelor.app.AxelorModule;
 import com.axelor.apps.baml.service.BamlService;
 import com.axelor.apps.baml.service.BamlServiceImpl;
+import com.axelor.apps.bpm.db.repo.BpmSurveyRepository;
 import com.axelor.apps.bpm.db.repo.BpmWkfInstanceRepository;
 import com.axelor.apps.bpm.db.repo.BpmWkfModelRepository;
+import com.axelor.apps.bpm.db.repo.SurveyRepository;
 import com.axelor.apps.bpm.db.repo.WkfInstanceRepository;
 import com.axelor.apps.bpm.db.repo.WkfModelRepository;
 import com.axelor.apps.bpm.listener.ServerStartListener;
@@ -50,6 +52,10 @@ import com.axelor.apps.bpm.service.execution.WkfTaskServiceImpl;
 import com.axelor.apps.bpm.service.execution.WkfUserActionService;
 import com.axelor.apps.bpm.service.execution.WkfUserActionServiceImpl;
 import com.axelor.apps.bpm.service.init.WkfProcessApplication;
+import com.axelor.apps.bpm.service.survey.SurveyCampaignService;
+import com.axelor.apps.bpm.service.survey.SurveyCampaignServiceImpl;
+import com.axelor.apps.bpm.service.survey.SurveyResponseService;
+import com.axelor.apps.bpm.service.survey.SurveyResponseServiceImpl;
 import com.axelor.apps.dmn.service.DmnDeploymentService;
 import com.axelor.apps.dmn.service.DmnDeploymentServiceImpl;
 import com.axelor.apps.dmn.service.DmnExportService;
@@ -90,5 +96,8 @@ public class BpmModule extends AxelorModule {
     bind(BpmDashboardService.class).to(BpmDashboardServiceImpl.class);
     bind(AppLoaderImportServiceImpl.class).to(AppLoaderImportBpmServiceImpl.class);
     bind(ServerStartListener.class);
+    bind(SurveyRepository.class).to(BpmSurveyRepository.class);
+    bind(SurveyCampaignService.class).to(SurveyCampaignServiceImpl.class);
+    bind(SurveyResponseService.class).to(SurveyResponseServiceImpl.class);
   }
 }

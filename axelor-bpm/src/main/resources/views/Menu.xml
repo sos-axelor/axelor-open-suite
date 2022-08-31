@@ -53,4 +53,24 @@
     <view type="form" name="baml-model-form"/>
   </action-view>
 
+  <menuitem title="Survey" name="menu-survey-root" parent="app-builder-root" order="22"/>
+
+  <menuitem title="Survey models" name="menu-survey-model-all" action="survey.model.all"
+    order="5" parent="menu-survey-root"/>
+
+  <action-view name="survey.model.all" title="Survey models"
+    model="com.axelor.apps.bpm.db.Survey">
+    <view type="grid" name="survey-grid"/>
+    <view type="form" name="survey-form"/>
+  </action-view>
+
+  <menuitem title="Survey campaigns" name="menu-survey-campaign-all"
+    action="survey.campaign.all" order="10" parent="menu-survey-root"/>
+
+  <action-view name="survey.campaign.all" title="Survey campaigns"
+    model="com.axelor.apps.bpm.db.SurveyCampaign">
+    <view type="grid" name="survey-campaign-grid"/>
+    <view type="form" name="survey-campaign-form"/>
+  </action-view>
+
 </object-views>

@@ -36,6 +36,8 @@
         if="__config__.app.getApp('bpm').getEnableAppBuilder()"/>
       <field name="versionTag"/>
       <field name="wkfStatusColor" widget="SingleSelect"/>
+      <field name="isSurvey"/>
+      <field name="survey" showIf="isSurvey" requiredIf="isSurvey" hidden="true"/>
     </panel>
     <panel-tabs>
       <panel name="allProcessPanel" title="All Processes">

@@ -31,4 +31,13 @@ public interface IExceptionMessage {
 
   public static final String EMPTY_OUTPUT_COLUMN = /*$$(*/
       "Output columns can't be empty in import file" /*)*/;
+
+  public static final String NO_SURVEY_EMAIL_TEMPLATE = /*$$(*/
+      "Please configure survey email template on BPM app" /*)*/;
+
+  public static final String SURVEY_RESPONSE_COMPLETED = /*$$(*/
+      "Thank you. Your response is completed" /*)*/;
+
+  public static final String SURVEY_CAMPAIGN_CLOSED = /*$$(*/
+      "Sorry the survey campaign is closed" /*)*/;
 }

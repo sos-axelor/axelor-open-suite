@@ -185,7 +185,8 @@ public class WkfTaskServiceImpl implements WkfTaskService {
     }
     if (taskExecuted
         && wkfInstanceService.isActiveProcessInstance(
-            processInstance.getId(), engine.getRuntimeService())) {
+            processInstance.getId(), engine.getRuntimeService())
+        && !instance.getWkfProcess().getWkfModel().getIsSurvey()) {
       log.debug("Check tasks again");
       runTasks(engine, instance, processInstance, signal);
     }
@@ -206,7 +207,8 @@ public class WkfTaskServiceImpl implements WkfTaskService {
     return new ArrayList<String>();
   }
 
-  protected List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
+  @Override
+  public List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId) {
 
     List<Task> tasks =
         engine

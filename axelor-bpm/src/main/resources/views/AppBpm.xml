@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.4.xsd">
+
+  <form id="bpm-app-bpm-config-form" name="app-bpm-config-form" title="App bpm"
+    model="com.axelor.apps.base.db.AppBpm" width="large" canDelete="false" canNew="false"
+    canCopy="false" extension="true">
+
+    <extend target="//field[@name='enableAppBuilder']">
+      <insert position="after">
+        <field name="surveyEmailTemplate"/>
+      </insert>
+    </extend>
+
+  </form>
+
+</object-views>

@@ -15,22 +15,22 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.apps.bpm.service.execution;
+package com.axelor.apps.bpm.service.survey;
 
-import com.axelor.apps.bpm.db.WkfInstance;
+import com.axelor.apps.bpm.db.SurveyCampaign;
 import com.axelor.exception.AxelorException;
+import java.io.IOException;
+import javax.mail.MessagingException;
 
-import java.util.List;
+public interface SurveyCampaignService {
 
-import org.camunda.bpm.engine.ProcessEngine;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.task.Task;
+  public void startCampaign(SurveyCampaign surveyCampaign)
+      throws AxelorException, ClassNotFoundException, InstantiationException,
+          IllegalAccessException, IOException, MessagingException;
 
-public interface WkfTaskService {
+  public void generateEmptyResponse(
+      SurveyCampaign surveyCampaign, String emailAddress, String token, boolean isBpm);
 
-  public String runTasks(
-      ProcessEngine engine, WkfInstance instance, ProcessInstance processInstance, String signal)
-      throws ClassNotFoundException, AxelorException;
-
-  public List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId);
+  public long countResponse(
+      SurveyCampaign surveyCampaign, String model, boolean completed, boolean partial);
 }

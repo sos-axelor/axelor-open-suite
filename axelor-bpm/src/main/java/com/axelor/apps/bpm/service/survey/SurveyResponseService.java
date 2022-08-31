@@ -15,22 +15,16 @@
  * You should have received a copy of the GNU Affero General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package com.axelor.apps.bpm.service.execution;
+package com.axelor.apps.bpm.service.survey;
 
-import com.axelor.apps.bpm.db.WkfInstance;
-import com.axelor.exception.AxelorException;
+import com.axelor.apps.bpm.db.SurveyResponse;
+import com.axelor.meta.db.MetaJsonRecord;
 
-import java.util.List;
+public interface SurveyResponseService {
 
-import org.camunda.bpm.engine.ProcessEngine;
-import org.camunda.bpm.engine.runtime.ProcessInstance;
-import org.camunda.bpm.engine.task.Task;
+  public MetaJsonRecord getNextForm(SurveyResponse surveyResponse);
 
-public interface WkfTaskService {
+  public void completeResponse(SurveyResponse surveyResponse);
 
-  public String runTasks(
-      ProcessEngine engine, WkfInstance instance, ProcessInstance processInstance, String signal)
-      throws ClassNotFoundException, AxelorException;
-
-  public List<Task> getActiveTasks(ProcessEngine engine, String processInstanceId);
+  public void submitForm(MetaJsonRecord metaJsonRecord);
 }

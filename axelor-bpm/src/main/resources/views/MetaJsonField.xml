@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<object-views xmlns="http://axelor.com/xml/ns/object-views"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/object-views http://axelor.com/xml/ns/object-views/object-views_5.4.xsd">
+
+  <grid name="meta-json-field-survey-grid" title="Fields"
+    model="com.axelor.meta.db.MetaJsonField" editable="true" canMove="true" orderBy="sequence"
+    onNew="action-meta-json-field-record-survey-default">
+    <field name="name"/>
+    <field name="type"/>
+    <field name="title"/>
+    <field name="targetModel" readonlyIf="!(type.match('^(one|many)-to-'))" widget="ref-text"
+      x-target-name="fullName" x-target="com.axelor.meta.db.MetaModel"/>
+    <field name="targetJsonModel" readonlyIf="!(type.match('^json-'))"/>
+    <field name="widget" widget="widget-select"/>
+    <field name="required"/>
+    <field name="help"/>
+    <field name="model" hidden="true"/>
+    <field name="modelField" hidden="true"/>
+  </grid>
+
+  <action-record name="action-meta-json-field-record-survey-default"
+    model="com.axelor.meta.db.MetaJsonField">
+    <field name="model" expr="'com.axelor.meta.db.MetaJsonRecord'"/>
+    <field name="modelField" expr="'attrs'"/>
+  </action-record>
+
+</object-views>

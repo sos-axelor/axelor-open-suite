@@ -9,4 +9,10 @@
     <option value="3">Terminated</option>
   </selection>
 
+  <selection name="bpm.survey.campaign.status.select">
+    <option value="1">Not started</option>
+    <option value="2">Running</option>
+    <option value="3">Closed</option>
+  </selection>
+
 </object-views>
