@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns="http://www.w3.org/2001/XMLSchema"
+	targetNamespace="http://axelor.com/xml/ns/bpm"
+	xmlns:xs="http://www.w3.org/2001/XMLSchema"
+	elementFormDefault="qualified" xmlns:op="http://axelor.com/xml/ns/bpm"
+	xmlns:vc="http://www.w3.org/2007/XMLSchema-versioning"
+	vc:minVersion="1.1">
+
+
+
+	<xs:complexType name="SubProcess">
+		<xs:sequence>
+			<xs:group ref="op:ProcessElements"></xs:group>
+		</xs:sequence>
+		<xs:attribute name="name" type="ID" use="required"></xs:attribute>
+		<xs:attribute name="title" type="xs:string"></xs:attribute>
+		<xs:attribute name="type" type="string"></xs:attribute>
+		<xs:attribute name="cardinality" type="int"></xs:attribute>
+		<xs:attribute name="collection" type="string"></xs:attribute>
+	</xs:complexType>
+
+	<xs:element name="object-processes" type="op:ObjectProcess"></xs:element>
+
+
+
+	<xs:complexType name="Events">
+		<xs:sequence>
+			<xs:element name="event" type="op:Event"
+				maxOccurs="unbounded" minOccurs="1">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Gateways">
+		<xs:sequence>
+			<xs:element name="gateway" type="op:Gateway"
+				maxOccurs="unbounded" minOccurs="1">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Activity">
+		<xs:sequence>
+			<xs:element name="button" type="op:Button" minOccurs="0"
+				maxOccurs="unbounded">
+			</xs:element>
+			<xs:element name="dmn" type="op:Dmns" minOccurs="0"
+				maxOccurs="unbounded">
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="ID" use="required"></xs:attribute>
+		<xs:attribute name="if" type="xs:string"></xs:attribute>
+		<xs:attribute name="help" type="xs:string"></xs:attribute>
+		<xs:attribute name="onEnable" type="xs:string"></xs:attribute>
+		<xs:attribute name="target" type="xs:string"></xs:attribute>
+		<xs:attribute name="title" type="xs:string"></xs:attribute>
+		<xs:attribute name="type" type="xs:string"></xs:attribute>
+		<xs:attribute name="model" type="string"></xs:attribute>
+		<xs:attribute name="form" type="string"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Comments">
+		<xs:sequence>
+			<xs:element name="comment" type="op:Comment" minOccurs="1"
+				maxOccurs="unbounded">
+			</xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+
+
+
+	<xs:complexType name="Models">
+		<xs:sequence>
+			<xs:element name="model" type="op:Model"></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+	<xs:complexType name="Step">
+		<xs:attribute name="name" type="ID"></xs:attribute>
+		<xs:attribute name="ref" type="xs:string"></xs:attribute>
+		<xs:attribute name="target" type="xs:string"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Button">
+		<xs:attribute name="name" type="ID" use="required"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Dmns">
+		<xs:attribute name="name" type="ID" use="required"></xs:attribute>
+		<xs:attribute name="decision" type="xs:string"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Model">
+		<xs:attribute name="name" type="ID" use="required"></xs:attribute>
+		<xs:attribute name="path" type="xs:string"></xs:attribute>
+		<xs:attribute name="start" type="xs:boolean"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Comment">
+		<xs:sequence>
+			<xs:element name="to" type="op:ToTarget" maxOccurs="unbounded" minOccurs="1"></xs:element>
+			<xs:element name="help" type="xs:string"></xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="ID" use="required"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Gateway">
+		<xs:sequence>
+			<xs:element name="branch" type="op:Branch"
+				maxOccurs="unbounded" minOccurs="1">
+			</xs:element>
+		</xs:sequence>
+		<xs:attribute name="name" type="ID" use="required"></xs:attribute>
+		<xs:attribute name="title" type="xs:string"></xs:attribute>
+		<xs:attribute name="type" type="xs:string"></xs:attribute>
+	</xs:complexType>
+
+	<xs:complexType name="Branch">
+		<xs:attribute name="if" type="xs:string"></xs:attribute>
+		<xs:attribute name="name" type="ID" use="required"></xs:attribute>
+		<xs:attribute name="target" type="xs:string" use="required"></xs:attribute>
+	</xs:complexType>
+
+
+	<xs:complexType name="Event">
+		<xs:attribute name="name" type="ID"></xs:attribute>
+		<xs:attribute name="title" type="xs:string"></xs:attribute>
+		<xs:attribute name="target" type="xs:string"></xs:attribute>
+		<xs:attribute name="interruptible" type="xs:string"></xs:attribute>
+		<xs:attribute name="trigger" type="xs:string"></xs:attribute>
+		<xs:attribute name="family" use="required">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="start"></xs:enumeration>
+					<xs:enumeration value="end"></xs:enumeration>
+					<xs:enumeration value="intermediate"></xs:enumeration>
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+		<xs:attribute name="type" type="string"></xs:attribute>
+		<xs:attribute name="attachedTo" type="string"></xs:attribute>
+		<xs:attribute name="interruptive" type="boolean"></xs:attribute>
+		<xs:attribute name="onEnable" type="string"></xs:attribute>
+	</xs:complexType>
+
+
+
+	<xs:complexType name="ToTarget">
+		<xs:attribute name="target" type="xs:string" use="required"></xs:attribute>
+	</xs:complexType>
+
+
+
+	<xs:complexType name="ObjectProcess">
+		<xs:sequence>
+			<xs:element name="process" type="op:Process"
+				maxOccurs="unbounded" minOccurs="1">
+			</xs:element>
+			<xs:element name="subprocess" type="op:SubProcess" maxOccurs="unbounded" minOccurs="0"></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+
+
+	<xs:complexType name="Process">
+		<xs:sequence>
+			<xs:element name="models" type="op:Models" maxOccurs="1"
+				minOccurs="1">
+			</xs:element>
+			<xs:group ref="op:ProcessElements"></xs:group>
+		</xs:sequence>
+		<xs:attribute name="name" type="ID"></xs:attribute>
+		<xs:attribute name="title" type="string"></xs:attribute>
+	</xs:complexType>
+
+	<xs:group name="ProcessElements">
+    	<xs:sequence>
+    		<xs:element name="events" type="op:Events" maxOccurs="1"
+    			minOccurs="1">
+    		</xs:element>
+    		<xs:element name="gateways" type="op:Gateways" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+    		<xs:element name="activities" type="op:Activities"
+    			maxOccurs="1" minOccurs="0">
+    		</xs:element>
+    		<xs:element name="comments" type="op:Comments" maxOccurs="1"
+    			minOccurs="0">
+    		</xs:element>
+    	</xs:sequence>
+    </xs:group>
+
+
+
+	<xs:complexType name="Activities">
+		<xs:sequence maxOccurs="unbounded" minOccurs="1">
+			<xs:element name="activity" type="op:Activity" maxOccurs="1" minOccurs="1"></xs:element>
+		</xs:sequence>
+	</xs:complexType>
+</xs:schema>

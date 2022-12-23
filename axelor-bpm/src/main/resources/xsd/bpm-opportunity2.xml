@@ -1,0 +1,176 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-processes xmlns="http://axelor.com/xml/ns/bpm"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/bpm bpm.xsd ">
+  <process name="mainOpportunityProcess" title="Main opportunity process">
+    <models>
+      <model name="com.axelor.apps.crm.db.Opportunity" start="true"/>
+    </models>
+    <events>
+      <event name="startOfTheProcess" title="Start of the opportunity process" family="start"
+        target="toNewGateway"/>
+      <event name="previousFromNegotiation"
+        title="Click on previous Button during negotiation" family="intermediate"
+        target="toPropositionGateway" interruptive="true" trigger="eval: previous-stageBtn = true"/>
+      <event name="archiveRecord" title="Archive the opportunity" family="intermediate"
+        target="endOfOpportunityProcess" trigger="eval: isArchived = true"/>
+      <event name="endOfOpportunityProcess" family="end"/>
+      <event name="previousFromFinalState" family="intermediate" trigger="condition"
+        onEnable="action-attrs-attributes"/>
+    </events>
+
+    <gateways>
+      <gateway name="toNewGateway" type="unique">
+        <branch name="toNewBranch" target="createOpportunity"/>
+      </gateway>
+
+      <gateway name="toQualifyGateway" type="unique">
+        <branch name="totoQualifyBranch" target="qualifyTheOpportunity"/>
+      </gateway>
+
+      <gateway name="toPropositionGateway" type="unique">
+        <branch if="previous-stageBtn" name="backToNewBranch" target="toNewGateway"/>
+        <branch if="next-stageBtn" name="toMakePropositionBranch"
+          target="makePropositionOpportunity"/>
+      </gateway>
+
+      <gateway name="toNegotiationGateway">
+        <branch name="toQualifyGatewayBranch" target="toQualifyGateway"/>
+        <branch name="toNegotiationBranch" target="negotiationGateway"/>
+      </gateway>
+
+      <gateway name="negotiationGateway" title="Negotiation" type="event">
+        <branch name="negotiationPrevious" target="previousFromNegotiation"/>
+        <branch name="archive" target="archiveRecord"/>
+      </gateway>
+    </gateways>
+
+    <activities>
+      <activity type="user" name="createOpportunity" title="Create the opportunity"
+        target="toQualifyGateway">
+        <button name="next-stageBtn"/>
+      </activity>
+
+      <activity type="user" name="qualifyTheOpportunity" title="Qualify the opportunity"
+        target="toPropositionGateway">
+        <button name="next-stageBtn-qaulify"/>
+        <button name="previous-stageBtn-qaulify"/>
+      </activity>
+
+      <activity type="user" name="makePropositionOpportunity" title="Make a proposition"
+        target="toNegotiationGateway">
+        <button name="next-stageBtn-proposition"/>
+        <button name="previous-stageBtn-proposition"/>
+      </activity>
+
+      <activity type="script" name="incrStatus" title="Increase Status" help="sdfsdfsfd"
+        onEnable="action-attrs-1"/>
+
+      <activity type="script" name="decrStatus" title="Decrease Status"
+        onEnable="action-attrs-2"/>
+    </activities>
+
+    <comments>
+      <comment name="comment1">
+        <to target="activity1"/>
+        <to target="activity2"/>
+        <help>
+          sdqfsqfdqsfdqsdfqsfdqfd
+        </help>
+      </comment>
+    </comments>
+  </process>
+
+  <subprocess name="lostOpportunitySubProcess"
+    title="Lost Opportunity  event sub process" type="subprocess type">
+    <events>
+      <event name="startOfTheLostSubProcess" title="Start of the lost sub process"
+        family="start" target="lostReasonView" trigger="eval: closed-lostBtn"/>
+      <event name="previousFromFinalState1" title="Click on previous Button when lost"
+        family="intermediate" target="endOfOpportunityProcess"/>
+      <event name="endOfOpportunityProcess1" family="end"/>
+    </events>
+
+    <activities>
+      <activity type="script" name="lostReasonView" title="Open Lost reason popup"
+        target="lostReason" onEnable="action-opportunity-view-opportunity-lost-popup-view"/>
+
+      <activity type="user" name="lostReason" title="Indicate lost reason"
+        if="eval: lostReason != null" model="Opportunity" form="opportunity-form-lost-popup"
+        target="lostStatus" onEnable="action-attrs-3"/>
+
+      <activity type="script" name="lostStatus" title="Change status to lost"
+        target="previousFromFinalState"
+        onEnable="action-attrs-4,action-opportunity-method-cancel-saleorders"/>
+    </activities>
+  </subprocess>
+
+  <subprocess name="wonOpportunitySubProcess" title="Won Opportunity event sub process">
+    <events>
+      <event name="startOfTheWonSubProcess" title="Start of the won sub process"
+        family="start" target="wonStatus" trigger="eval: closed-wonBtn"/>
+      <event name="previousFromFinalState2" title="Click on previous Button when won"
+        family="intermediate" target="endOfOpportunityProcess"/>
+      <event name="endOfOpportunityProcess2" family="end"/>
+    </events>
+
+    <activities>
+      <activity type="script" name="wonStatus" title="Change status to won"
+        target="previousFromFinalState" onEnable="action-attrs-5"/>
+    </activities>
+  </subprocess>
+
+  <subprocess name="scheduleEventSubProcess" title="Schedule event" type="...">
+    <events>
+      <event name="startOfTheScheduleSubProcess" title="Click on schedule event item"
+        family="start" interruptive="false" target="endOfScheduleEventSubProcess"
+        trigger="eval: scheduleEventItem"/>
+    </events>
+  </subprocess>
+
+  <subprocess name="createQuotationSubProcess" title="Create a quotation">
+    <events>
+      <event name="newQuotation" title="New quotation" family="start" type="conditionnal"
+        interruptive="false" trigger="eval: btn" target="createQuotationSubProcessSub1"/>
+      <event name="end" family="end"/>
+    </events>
+  </subprocess>
+
+  <subprocess name="createQuotationSubProcessSub1">
+    <events>
+      <event name="startSub" family="start" target="eventGateway"/>
+      <event name="endSub" family="end"/>
+      <event name="cancelEnd" family="end" type="cancel"/>
+      <event name="partner" family="intermediate" type="conditionnal" trigger="eval: partner"
+        target="custCreatedScript"/>
+      <event name="notPartnerLead" family="intermediate" type="conditionnal"
+        trigger="eval: !partner &amp;&amp; lead" target="clickOkOrCancel"/>
+      <event name="notPartnerNotLead" family="intermediate" type="conditionnal"
+        trigger="eval: !partner &amp;&amp; !lead" target="cancelEnd"/>
+      <event name="triggerCreateCustProcess" family="intermediate" type="message"
+        target="custCreated"/>
+      <event name="custCreated" family="intermediate" type="message"
+        target="custCreatedScript"/>
+    </events>
+
+    <gateways>
+      <gateway name="eventGateway" type="event">
+        <branch name="partnerBranch" target="partner"/>
+        <branch name="notPartnerLeadBranch" target="notPartnerLead"/>
+        <branch name="notPartnerNotLeadBranch" target="notPartnerNotLead"/>
+      </gateway>
+      <gateway name="uniqueGateway" type="unique">
+        <branch if="ok" name="okBranch" target="triggerCreateCustProcess"/>
+        <branch if="cancel" name="cancelBranch" target="cancelEnd"/>
+      </gateway>
+    </gateways>
+
+    <activities>
+      <activity type="user" name="clickOkOrCancel" title="Click on ok or cancel"
+        target="uniqueGateway"/>
+      <activity type="script" name="custCreatedScript"
+        onEnable="action-sale-method-generate-sale-order" target="end"/>
+    </activities>
+
+  </subprocess>
+</object-processes>

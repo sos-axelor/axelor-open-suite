@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<object-processes xmlns="http://axelor.com/xml/ns/bpm"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://axelor.com/xml/ns/bpm bpm.xsd ">
+  <process name="mainOpportunityProcess" title="Main opportunity process">
+    <models>
+      <model name="com.axelor.apps.crm.db.Opportunity" start="true"/>
+    </models>
+    <events>
+      <event name="startOfTheProcess" title="Start of the opportunity process" family="start"
+        target="toNewGateway"/>
+      <event name="endOfOpportunityProcess" family="end"/>
+    </events>
+
+    <gateways>
+      <gateway name="toNewGateway" type="unique">
+        <branch name="toNewBranch" target="createOpportunity"/>
+      </gateway>
+      
+      <gateway name="toQualifyGateway" type="unique">
+        <branch name="totoQualifyBranch" target="qualifyTheOpportunity"/>
+      </gateway>
+      
+    </gateways>
+
+    <activities>
+      <activity type="user" name="createOpportunity" title="Create the opportunity"
+        target="toQualifyGateway">
+        <button name="next-stageBtn"/>
+      </activity>
+      
+      <activity type="user" name="qualifyTheOpportunity" title="Qualify the opportunity"
+        target="endOfOpportunityProcess">
+        <button name="next-stageBtn-qaulify"/>
+        <button name="previous-stageBtn-qaulify"/>
+      </activity>
+
+    </activities>
+
+  </process>
+
+</object-processes>
