@@ -19,9 +19,7 @@ package com.axelor.apps.bpm.service.execution;
 
 import com.axelor.apps.bpm.db.WkfInstance;
 import com.axelor.exception.AxelorException;
-
 import java.util.List;
-
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.runtime.ProcessInstance;
 import org.camunda.bpm.engine.task.Task;

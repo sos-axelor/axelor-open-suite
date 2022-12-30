@@ -17,9 +17,13 @@
  */
 package com.axelor.apps.bpm.service.deployment;
 
+import com.axelor.apps.bpm.db.Survey;
+import com.axelor.apps.bpm.db.SurveyLine;
 import com.axelor.apps.bpm.db.WkfModel;
 import com.axelor.apps.bpm.db.WkfProcess;
 import com.axelor.apps.bpm.db.WkfProcessConfig;
+import com.axelor.apps.bpm.db.WkfTaskConfig;
+import com.axelor.apps.bpm.db.repo.SurveyRepository;
 import com.axelor.apps.bpm.db.repo.WkfModelRepository;
 import com.axelor.apps.bpm.db.repo.WkfProcessRepository;
 import com.axelor.apps.bpm.service.WkfCommonService;
@@ -31,6 +35,7 @@ import com.axelor.meta.db.MetaAttrs;
 import com.axelor.meta.db.MetaFile;
 import com.axelor.meta.db.repo.MetaFileRepository;
 import com.axelor.meta.db.repo.MetaJsonModelRepository;
+import com.google.common.base.Strings;
 import com.google.inject.Inject;
 import com.google.inject.persist.Transactional;
 import java.io.ByteArrayInputStream;
@@ -39,6 +44,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import org.camunda.bpm.engine.ProcessEngine;
 import org.camunda.bpm.engine.impl.bpmn.parser.BpmnParser;
 import org.camunda.bpm.engine.migration.MigrationPlan;
@@ -114,6 +120,10 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     Beans.get(WkfModelRepository.class).save(wkfModel);
 
     metaAttrsService.saveMetaAttrs(metaAttrsList, wkfModel.getId());
+
+    if (wkfModel.getIsSurvey()) {
+      addSurveyLines();
+    }
   }
 
   protected Map<String, String> deployProcess(
@@ -365,5 +375,38 @@ public class BpmDeploymentServiceImpl implements BpmDeploymentService {
     }
 
     return new WkfProcessConfig();
+  }
+
+  protected void addSurveyLines() {
+
+    Survey survey = wkfModel.getSurvey();
+
+    if (survey == null) {
+      return;
+    }
+
+    Map<String, SurveyLine> surveyLineMap =
+        survey.getSurveyLineList().stream()
+            .collect(Collectors.toMap(it -> it.getMetaJsonModel().getName(), it -> it));
+
+    for (WkfTaskConfig wkfTaskConfig : wkfModel.getWkfTaskConfigList()) {
+
+      String defaultForm = wkfTaskConfig.getDefaultForm();
+
+      if (!Strings.isNullOrEmpty(defaultForm)) {
+        String modelName = defaultForm.split("-")[2];
+        if (!surveyLineMap.containsKey(modelName)) {
+          SurveyLine surveyLine = new SurveyLine();
+          surveyLine.setSurvey(survey);
+          surveyLine.setMetaJsonModel(metaJsonModelRepository.findByName(modelName));
+          surveyLineMap.put(modelName, surveyLine);
+        }
+      }
+    }
+
+    survey.clearSurveyLineList();
+    survey.getSurveyLineList().addAll(surveyLineMap.values());
+
+    Beans.get(SurveyRepository.class).save(survey);
   }
 }
