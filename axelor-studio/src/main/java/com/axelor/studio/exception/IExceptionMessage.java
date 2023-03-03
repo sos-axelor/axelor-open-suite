@@ -30,4 +30,11 @@ public interface IExceptionMessage {
 
   static final String CANNOT_ALTER_NODES = /*$$(*/
       "Can't alter nodes for real existing selection field" /*)*/;
+
+  static final String NO_SUPERSET_URL = /*$$(*/ "Please configure superset url on BPM app" /*)*/;
+
+  static final String NO_SUPERSET_USER = /*$$(*/
+      "No superset configuration found for current user" /*)*/;
+
+  static final String INVALID_SUPERSET_USER = /*$$(*/ "Invalid superset user" /*)*/;
 }

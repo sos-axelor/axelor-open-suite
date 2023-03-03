@@ -8,6 +8,7 @@
 
     <panel name="mainPanel">
       <field name="enableAppBuilder" widget="Boolean-switch"/>
+      <field name="supersetUrl"/>
     </panel>
 
     <panel-mail name="mailPanel">

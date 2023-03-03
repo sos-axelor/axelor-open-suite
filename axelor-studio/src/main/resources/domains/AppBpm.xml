@@ -10,6 +10,9 @@
     <one-to-one ref="com.axelor.apps.base.db.App" name="app"/>
 
     <boolean name="enableAppBuilder" title="Enable app builder" default="true"/>
+
+    <string name="supersetUrl" title="Superset URL" help="Url should not ends with '/login'"/>
+
   </entity>
 
 </domain-models>

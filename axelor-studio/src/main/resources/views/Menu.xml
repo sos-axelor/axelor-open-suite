@@ -167,4 +167,12 @@
       self.isInAppView = true)</domain>
   </action-view>
 
+  <menuitem title="SuperSet" name="menu-superset" parent="app-builder-root"
+    action="superset.all.view" order="54"/>
+
+  <action-view name="superset.all.view" title="Superset">
+    <view type="html" name="ws/superset/open"/>
+  </action-view>
+
+
 </object-views>
