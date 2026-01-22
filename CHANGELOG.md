@@ -749,9 +749,61 @@ Replaced the attrs action `action-purchase-order-line-attrs-delivery-panel` with
 
 * Project: improve task tree management.
 
+<<<<<<< HEAD
 [9.0.5]: https://github.com/axelor/axelor-open-suite/compare/v9.0.4...v9.0.5
 [9.0.4]: https://github.com/axelor/axelor-open-suite/compare/v9.0.3...v9.0.4
 [9.0.3]: https://github.com/axelor/axelor-open-suite/compare/v9.0.2...v9.0.3
 [9.0.2]: https://github.com/axelor/axelor-open-suite/compare/v9.0.1...v9.0.2
 [9.0.1]: https://github.com/axelor/axelor-open-suite/compare/v9.0.0...v9.0.1
 [9.0.0]: https://github.com/axelor/axelor-open-suite/compare/v8.5.9...v9.0.0
+=======
+#### Contract
+
+* Contract: grouped grid view by status field.
+
+#### Business project
+
+* Removed business project from community edition.
+
+### Fixes
+
+#### Base
+
+* Moved print email method to axelor-message.
+* Sale order/partner: fixed translations.
+* App base: fixed translation of product sequence type.
+* Init/demo data: fixed some init and demo data.
+
+#### Sale
+
+* Invoice: fixed an issue where an invoice ventilation could throw an exception.
+
+#### Account
+
+* Preparatory process: fixed an issue with multi tax.
+
+#### Stock
+
+* Mass stock move: improved display and process.
+
+#### Supplychain
+
+* Sale order: fixed the display of stock move linked to a sale order.
+
+#### Production
+
+* Bill of material: added default value for calculation quantity.
+* Manuf order: fixed relation with production order.
+
+[8.5.10]: https://github.com/axelor/axelor-open-suite/compare/v8.5.9...v8.5.10
+[8.5.9]: https://github.com/axelor/axelor-open-suite/compare/v8.5.8...v8.5.9
+[8.5.8]: https://github.com/axelor/axelor-open-suite/compare/v8.5.7...v8.5.8
+[8.5.7]: https://github.com/axelor/axelor-open-suite/compare/v8.5.6...v8.5.7
+[8.5.6]: https://github.com/axelor/axelor-open-suite/compare/v8.5.5...v8.5.6
+[8.5.5]: https://github.com/axelor/axelor-open-suite/compare/v8.5.4...v8.5.5
+[8.5.4]: https://github.com/axelor/axelor-open-suite/compare/v8.5.3...v8.5.4
+[8.5.3]: https://github.com/axelor/axelor-open-suite/compare/v8.5.2...v8.5.3
+[8.5.2]: https://github.com/axelor/axelor-open-suite/compare/v8.5.1...v8.5.2
+[8.5.1]: https://github.com/axelor/axelor-open-suite/compare/v8.5.0...v8.5.1
+[8.5.0]: https://github.com/axelor/axelor-open-suite/compare/v8.4.8...v8.5.0
+>>>>>>> 80fc92d565 (Release 8.5.10)
