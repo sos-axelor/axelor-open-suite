@@ -72,6 +72,16 @@
         </panel>
       </insert>
     </extend>
+    <extend target="//field[@name='price']">
+      <insert position="after">
+        <panel colSpan="6">
+          <button name="btnOpenProductLeadTimeTree" colSpan="1" title="" link=""
+            icon="fa-list" onClick="action-sale-order-line-method-open-product-lead-time-tree"/>
+          <field name="timeToAvailable" colSpan="5" readonly="true"/>
+          <field name="estimatedAvailabilityDate" colSpan="5"/>
+        </panel>
+      </insert>
+    </extend>
   </form>
 
   <form name="sale-order-line-template-form" id="production-sale-order-line-template-form"
@@ -115,6 +125,81 @@
     </panel>
   </form>
 
+  <custom name="product-lead-time-custom-tree" title="Product available time">
+    <field name="name" title="Name" type="string"/>
+    <field name="deliveryTime" type="decimal" title="Delivery time" width="150"/>
+    <field name="totalDeliveryTime" type="decimal" title="Total delivery Time" width="150"/>
+    <field name="reqQty" type="decimal" title="Required qty" width="150"/>
+    <field name="availableQty" type="decimal" title="Available qty" width="150"/>
+    <field name="level" type="integer" hidden="true"/>
+    <dataset type="rpc">
+	  <![CDATA[com.axelor.apps.production.web.SaleOrderLineController:computeProductLeadTimeTree]]>
+    </dataset>
+    <template><![CDATA[
+    <>
+    <Box m={2} border w={100}>
+      <Table>
+      <colgroup>
+        <col />
+        <col style={{ width: 150 }} />
+        <col style={{ width: 150 }} />
+        <col style={{ width: 150 }} />
+        <col style={{ width: 150 }} />
+      </colgroup>
+      <TableHead>
+        <TableRow>
+          <TableCell as="th">{_t("Name")}</TableCell>
+          <TableCell as="th" style={{ textAlign: "right" }}>
+            {_t("Delivery time")}
+          </TableCell>
+          <TableCell as="th" style={{ textAlign: "right" }}>
+            {_t("Total delivery time")}
+          </TableCell>
+          <TableCell as="th" style={{ textAlign: "right" }}>
+            {_t("Required qty")}
+          </TableCell>
+          <TableCell as="th" style={{ textAlign: "right" }}>
+            {_t("Available qty")}
+          </TableCell>
+        </TableRow>
+      </TableHead>
+      <TableBody>
+      {data.map((row, ind) => {
+        let color;
+        if (row.isProduce) {
+          color = "var(--bs-green)";
+        } else {
+          color = "var(--bs-blue)";
+        }
+
+        return (
+          <TableRow
+            key={ind}
+            style={{ cursor: "pointer", "--bs-table-color-state": color }}
+            onDoubleClick={() =>
+              $execute("action-sale-order-line-method-open-available-product", { productId: row.productId })
+            }
+          >
+            <TableCell>
+              <span style={{ paddingLeft: row.level * 16 }}>
+                {row.name}
+              </span>
+            </TableCell>
+            <TableCell style={{ textAlign: "right" }}>{__number(row.deliveryTime, 2)}</TableCell>
+            <TableCell style={{ textAlign: "right" }}>{__number(row.totalDeliveryTime, 2)}</TableCell>
+            <TableCell style={{ textAlign: "right" }}>{__number(row.requiredQty, 2)}</TableCell>
+            <TableCell style={{ textAlign: "right" }}>{__number(row.availableQty, 2)}</TableCell>
+          </TableRow>
+        );
+      })}
+    </TableBody>
+    </Table>
+    </Box>
+    </>
+
+  ]]></template>
+  </custom>
+
   <action-method name="action-production-method-customize-bill-of-material">
     <call class="com.axelor.apps.production.web.SaleOrderLineController"
       method="customizeBillOfMaterial"/>
@@ -141,6 +226,16 @@
   <action-method name="action-sale-order-line-method-prod-process-onchange">
     <call class="com.axelor.apps.production.web.SaleOrderLineController"
       method="prodProcessOnChange"/>
+  </action-method>
+
+  <action-method name="action-sale-order-line-method-open-product-lead-time-tree">
+    <call class="com.axelor.apps.production.web.SaleOrderLineController"
+      method="openProductLeadTimeTree"/>
+  </action-method>
+
+  <action-method name="action-sale-order-line-method-open-available-product">
+    <call class="com.axelor.apps.production.web.SaleOrderLineController"
+      method="openAvailableProducts"/>
   </action-method>
 
   <action-record name="action-sale-order-line-record-set-production-blocking-user"

@@ -19,18 +19,23 @@
 package com.axelor.apps.production.web;
 
 import com.axelor.apps.base.AxelorException;
+import com.axelor.apps.base.db.Product;
+import com.axelor.apps.base.db.repo.ProductRepository;
 import com.axelor.apps.base.service.exception.TraceBackService;
 import com.axelor.apps.production.db.BillOfMaterial;
 import com.axelor.apps.production.db.ProdProcess;
+import com.axelor.apps.production.rest.dto.ProductLeadTimeDto;
 import com.axelor.apps.production.service.BillOfMaterialService;
 import com.axelor.apps.production.service.ProdProcessService;
 import com.axelor.apps.production.service.SaleOrderLineBomService;
 import com.axelor.apps.production.service.SaleOrderLineDetailsBomService;
 import com.axelor.apps.production.service.SaleOrderLineDetailsProdProcessService;
 import com.axelor.apps.production.service.SaleOrderLineDomainProductionService;
+import com.axelor.apps.production.service.SaleOrderLineProductionService;
 import com.axelor.apps.production.service.SolBomUpdateService;
 import com.axelor.apps.production.service.SolDetailsBomUpdateService;
 import com.axelor.apps.sale.db.SaleOrderLine;
+import com.axelor.apps.sale.db.repo.SaleOrderLineRepository;
 import com.axelor.apps.sale.service.saleorderline.SaleOrderLineContextHelper;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
@@ -38,6 +43,10 @@ import com.axelor.meta.schema.actions.ActionView;
 import com.axelor.rpc.ActionRequest;
 import com.axelor.rpc.ActionResponse;
 import com.google.inject.Singleton;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Singleton
 public class SaleOrderLineController {
@@ -156,5 +165,85 @@ public class SaleOrderLineController {
               .getUpdatedSaleOrderLineDetailsFromProdProcess(
                   prodProcess, saleOrder, saleOrderLine));
     }
+  }
+
+  public void openProductLeadTimeTree(ActionRequest request, ActionResponse response) {
+    SaleOrderLine saleOrderLine = request.getContext().asType(SaleOrderLine.class);
+    response.setView(
+        ActionView.define(I18n.get("Product available time"))
+            .add("custom", "product-lead-time-custom-tree")
+            .param("popup", "true")
+            .param("canClose", "true")
+            .context("saleOrderLineId", saleOrderLine.getId())
+            .map());
+  }
+
+  public void computeProductLeadTimeTree(ActionRequest request, ActionResponse response) {
+    Object solId = request.getData().get("saleOrderLineId");
+    if (solId == null) {
+      return;
+    }
+    SaleOrderLine saleOrderLine =
+        Beans.get(SaleOrderLineRepository.class).find(Long.parseLong(solId.toString()));
+
+    ProductLeadTimeDto productLeadTimeDto =
+        Beans.get(SaleOrderLineProductionService.class)
+            .generateProductLeadTimeDto(
+                saleOrderLine.getProduct(), saleOrderLine, saleOrderLine.getQty());
+
+    List<Map<String, Object>> products = new ArrayList<Map<String, Object>>();
+
+    addProducts(productLeadTimeDto, products, saleOrderLine.getQty(), 0);
+
+    response.setData(products);
+  }
+
+  private void addProducts(
+      ProductLeadTimeDto productLeadTimeDto,
+      List<Map<String, Object>> products,
+      BigDecimal qty,
+      Integer level) {
+
+    Product product = productLeadTimeDto.getProduct();
+    products.add(
+        Map.of(
+            "name",
+            product.getFullName(),
+            "deliveryTime",
+            productLeadTimeDto.getDeliveryTime(),
+            "level",
+            level,
+            "totalDeliveryTime",
+            productLeadTimeDto.getTotalDeliveryTime(),
+            "requiredQty",
+            productLeadTimeDto.getRequiredQty(),
+            "availableQty",
+            productLeadTimeDto.getAvailableQty(),
+            "isProduce",
+            product
+                .getProcurementMethodSelect()
+                .equals(ProductRepository.PROCUREMENT_METHOD_PRODUCE),
+            "productId",
+            product.getId()));
+    productLeadTimeDto
+        .getChildrenLeadTimes()
+        .forEach(it -> addProducts(it, products, qty, level + 1));
+  }
+
+  public void openAvailableProducts(ActionRequest request, ActionResponse response) {
+
+    Map<String, Object> ctx = (Map<String, Object>) request.getData().get("context");
+    Object productId = ctx.get("productId");
+
+    response.setView(
+        ActionView.define(I18n.get("Product"))
+            .model(Product.class.getName())
+            .add("form", "product-form")
+            .add("grid", "product-grid")
+            .param("popup", "true")
+            .context("_showRecord", Long.parseLong(productId.toString()))
+            .context("_isModel", false)
+            .context("_productTypeSelect", "storable")
+            .map());
   }
 }

@@ -307,6 +307,7 @@ import com.axelor.apps.supplychain.service.saleorder.onchange.SaleOrderOnLineCha
 import com.axelor.apps.supplychain.service.saleorderline.SaleOrderLineDummySupplychainServiceImpl;
 import com.axelor.apps.supplychain.service.saleorderline.SaleOrderLineOnChangeSupplychainServiceImpl;
 import com.axelor.apps.supplychain.service.saleorderline.SaleOrderLineProductSupplychainServiceImpl;
+import com.axelor.apps.supplychain.service.saleorderline.SaleOrderLineServiceSupplyChainImpl;
 import com.axelor.apps.supplychain.service.saleorderline.SaleOrderLineViewServiceSupplychainImpl;
 import com.axelor.apps.supplychain.service.saleorderline.view.SaleOrderLineOnSaleSupplyChangeServiceImpl;
 
@@ -501,5 +502,6 @@ public class ProductionModule extends AxelorModule {
     bind(SaleOrderBlockingProductionService.class).to(SaleOrderBlockingProductionServiceImpl.class);
     bind(SaleOrderLineComputeQtyServiceImpl.class)
         .to(SaleOrderLineComputeQtyProductionServiceImpl.class);
+    bind(SaleOrderLineServiceSupplyChainImpl.class).to(SaleOrderLineProductionServiceImpl.class);
   }
 }
