@@ -916,4 +916,15 @@ public class SaleOrderController {
       TraceBackService.trace(response, e);
     }
   }
+
+  public void computeAvailableTime(ActionRequest request, ActionResponse response) {
+    try {
+      SaleOrder saleOrder = request.getContext().asType(SaleOrder.class);
+      saleOrder = Beans.get(SaleOrderRepository.class).find(saleOrder.getId());
+      Beans.get(SaleOrderSupplychainService.class).computeOrderLineTimeToAvailable(saleOrder);
+      response.setReload(true);
+    } catch (Exception e) {
+      TraceBackService.trace(response, e);
+    }
+  }
 }

@@ -27,6 +27,8 @@
     <toolbar>
       <button name="printBtn" title="Print" onClick="save,action-method-print-template"
         showIf="statusSelect == 2"/>
+      <button name="consolidatedBtn" title="Vue consoldiée"
+        onClick="save,action-mrp-view-open-mrp-view" showIf="statusSelect == 2"/>
     </toolbar>
     <menubar>
       <menu title="Tools" showTitle="true" icon="fa-wrench">
@@ -192,6 +194,11 @@
     <view-param name="popup-save" value="false"/>
     <view-param name="forceEdit" value="true"/>
     <context name="_showRecord" expr="eval: id"/>
+  </action-view>
+
+  <action-view name="action-mrp-view-open-mrp-view" title="Vue consoldiée">
+    <view type="html" name="mrp-view?id={{mrpId}}"/>
+    <context name="mrpId" expr="eval:id"/>
   </action-view>
 
   <action-attrs name="action-mrp-wizard-attrs-set-default-onnew"
