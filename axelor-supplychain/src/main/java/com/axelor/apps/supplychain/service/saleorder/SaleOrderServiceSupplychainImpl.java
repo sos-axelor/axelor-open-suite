@@ -59,6 +59,7 @@ import com.axelor.apps.supplychain.service.SaleInvoicingStateService;
 import com.axelor.apps.supplychain.service.TrackingNumberSupplychainService;
 import com.axelor.apps.supplychain.service.app.AppSupplychainService;
 import com.axelor.apps.supplychain.service.saleorderline.SaleOrderLineAnalyticService;
+import com.axelor.apps.supplychain.service.saleorderline.SaleOrderLineServiceSupplyChain;
 import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.studio.db.AppSupplychain;
@@ -68,6 +69,7 @@ import jakarta.inject.Inject;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.net.MalformedURLException;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -451,5 +453,26 @@ public class SaleOrderServiceSupplychainImpl extends SaleOrderServiceImpl
     saleOrder = super.addPack(saleOrder, pack, packQty);
     this.setAdvancePayment(saleOrder);
     return saleOrder;
+  }
+
+  @Override
+  @Transactional
+  public void computeOrderLineTimeToAvailable(SaleOrder saleOrder) throws AxelorException {
+    SaleOrderLineServiceSupplyChain saleOrderLineServiceSupplyChain =
+        Beans.get(SaleOrderLineServiceSupplyChain.class);
+
+    LocalDate estDeliveryDate = saleOrder.getEstimatedConfirmationDate();
+    if (estDeliveryDate == null) {
+      estDeliveryDate = appBaseService.getTodayDate(saleOrder.getCompany());
+    }
+    for (SaleOrderLine line : saleOrder.getSaleOrderLineList()) {
+      line = saleOrderLineServiceSupplyChain.computeOrderLineTimeToAvailable(line);
+      LocalDate estDate = line.getEstimatedAvailabilityDate();
+      if (estDate != null && estDate.isAfter(estDeliveryDate)) {
+        estDeliveryDate = estDate;
+      }
+    }
+    saleOrder.setEstimatedDeliveryDate(estDeliveryDate);
+    saleOrderRepo.save(saleOrder);
   }
 }

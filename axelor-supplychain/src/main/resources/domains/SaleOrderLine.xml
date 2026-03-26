@@ -63,7 +63,8 @@
       title="Delivery blocking done by"/>
     <string name="commentDeliveryBlocking" title="Blocking comment for delivery" large="true"/>
 
-
+    <decimal name="timeToAvailable" title="Time to available"/>
+    <date name="estimatedAvailabilityDate" title="Estimated availability date"/>
 
     <extra-code>
   		<![CDATA[

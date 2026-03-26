@@ -22,6 +22,8 @@ import com.axelor.apps.account.db.repo.InvoiceRepository;
 import com.axelor.apps.base.AxelorException;
 import com.axelor.apps.base.db.Partner;
 import com.axelor.apps.base.db.Product;
+import com.axelor.apps.base.db.repo.ProductRepository;
+import com.axelor.apps.base.db.repo.TraceBackRepository;
 import com.axelor.apps.purchase.db.SupplierCatalog;
 import com.axelor.apps.purchase.service.app.AppPurchaseService;
 import com.axelor.apps.sale.db.SaleOrder;
@@ -35,12 +37,15 @@ import com.axelor.apps.stock.db.repo.StockMoveLineRepository;
 import com.axelor.apps.stock.db.repo.StockMoveRepository;
 import com.axelor.apps.stock.service.StockLocationLineFetchService;
 import com.axelor.apps.stock.service.StockLocationService;
+import com.axelor.apps.stock.service.StockMoveService;
 import com.axelor.apps.supplychain.db.repo.SupplyChainConfigRepository;
+import com.axelor.apps.supplychain.exception.SupplychainExceptionMessage;
 import com.axelor.apps.supplychain.service.app.AppSupplychainService;
 import com.axelor.apps.supplychain.service.config.SupplyChainConfigService;
 import com.axelor.common.ObjectUtils;
 import com.axelor.common.StringUtils;
 import com.axelor.db.JPA;
+import com.axelor.i18n.I18n;
 import com.axelor.inject.Beans;
 import com.axelor.utils.helpers.StringHelper;
 import com.google.common.base.Preconditions;
@@ -48,6 +53,7 @@ import com.google.inject.persist.Transactional;
 import jakarta.inject.Inject;
 import jakarta.persistence.TypedQuery;
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -257,5 +263,80 @@ public class SaleOrderLineServiceSupplyChainImpl implements SaleOrderLineService
     query.setParameter("saleOrderLineId", saleOrderLine.getId());
 
     return query.getSingleResult();
+  }
+
+  @Override
+  public SaleOrderLine computeOrderLineTimeToAvailable(SaleOrderLine saleOrderLine)
+      throws AxelorException {
+
+    Product product = saleOrderLine.getProduct();
+    if (product == null) {
+      return saleOrderLine;
+    }
+
+    BigDecimal availQty =
+        getAvailableStockPerEstimatedDeliveryDate(saleOrderLine, saleOrderLine.getProduct());
+
+    BigDecimal leadTime = BigDecimal.ZERO;
+    if (availQty.compareTo(saleOrderLine.getQty()) < 0) {
+      leadTime = computeLeadTime(saleOrderLine, product, saleOrderLine.getQty());
+    }
+
+    saleOrderLine.setTimeToAvailable(leadTime);
+    LocalDate estAvailabilityDate = getEstimatedConfirmationDate(saleOrderLine);
+    if (leadTime != null) {
+      estAvailabilityDate = estAvailabilityDate.plusDays(leadTime.longValue());
+    }
+    saleOrderLine.setEstimatedAvailabilityDate(estAvailabilityDate);
+
+    return saleOrderLine;
+  }
+
+  protected BigDecimal computeLeadTime(
+      SaleOrderLine saleOrderLine, Product product, BigDecimal solQty) throws AxelorException {
+    String procurementType = product.getProcurementMethodSelect();
+    if (procurementType.equals(ProductRepository.PROCUREMENT_METHOD_BUY)
+        || procurementType.equals(ProductRepository.PROCUREMENT_METHOD_BUYANDPRODUCE)) {
+      return BigDecimal.valueOf(product.getSupplierDeliveryTime());
+    }
+    return null;
+  }
+
+  protected BigDecimal getAvailableStockPerEstimatedDeliveryDate(
+      SaleOrderLine saleOrderLine, Product product) throws AxelorException {
+    if (saleOrderLine.getProduct() == null) {
+      return BigDecimal.ZERO;
+    }
+    if (saleOrderLine.getSaleOrder().getStockLocation() == null) {
+      throw new AxelorException(
+          TraceBackRepository.CATEGORY_CONFIGURATION_ERROR,
+          I18n.get(
+              String.format(
+                  SupplychainExceptionMessage.SO_MISSING_STOCK_LOCATION,
+                  saleOrderLine.getSaleOrder().getSaleOrderSeq())));
+    }
+    LocalDate date = getEstimatedConfirmationDate(saleOrderLine);
+    List<Map<String, Object>> res =
+        Beans.get(StockMoveService.class)
+            .getStockPerDate(
+                saleOrderLine.getSaleOrder().getStockLocation().getId(),
+                product.getId(),
+                date,
+                date);
+
+    Map<String, Object> data = res.get(0);
+    if (data != null) {
+      return (BigDecimal) data.get("$qty");
+    }
+    return BigDecimal.ZERO;
+  }
+
+  protected LocalDate getEstimatedConfirmationDate(SaleOrderLine saleOrderLine) {
+    SaleOrder saleOrder = saleOrderLine.getSaleOrder();
+    LocalDate date = saleOrder.getEstimatedConfirmationDate();
+    if (date == null) {
+      date = appSupplychainService.getTodayDate(saleOrderLine.getSaleOrder().getCompany());
+    }
+    return date;
   }
 }

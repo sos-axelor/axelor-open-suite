@@ -89,4 +89,6 @@ public interface SaleOrderLineServiceSupplyChain {
   void updateStockMoveReservationDateTime(SaleOrderLine saleOrderLine) throws AxelorException;
 
   Map<String, Object> updateRequestedReservedQty(SaleOrderLine saleOrderLine);
+
+  SaleOrderLine computeOrderLineTimeToAvailable(SaleOrderLine saleOrderLine) throws AxelorException;
 }
