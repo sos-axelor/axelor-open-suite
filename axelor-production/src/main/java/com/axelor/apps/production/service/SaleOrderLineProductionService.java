@@ -18,9 +18,15 @@
  */
 package com.axelor.apps.production.service;
 
+import com.axelor.apps.base.AxelorException;
+import com.axelor.apps.base.db.Product;
+import com.axelor.apps.production.rest.dto.ProductLeadTimeDto;
 import com.axelor.apps.sale.db.SaleOrderLine;
 import java.math.BigDecimal;
 
 public interface SaleOrderLineProductionService {
   BigDecimal computeQtyToProduce(SaleOrderLine saleOrderLine, SaleOrderLine parentSol);
+
+  ProductLeadTimeDto generateProductLeadTimeDto(
+      Product bom, SaleOrderLine saleOrderLine, BigDecimal stockRequired) throws AxelorException;
 }
